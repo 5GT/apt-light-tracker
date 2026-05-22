@@ -1,0 +1,7 @@
+edge-profile/
+.tools/
+.gitconfig
+*preview*.png
+public/maps/generated/
+public/maps/apartment-electrical-plan.pdf
+public/vendor/

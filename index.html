@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#080a0d" />
+    <title>&#51312;&#47749; &#51216;&#44160;</title>
+    <link rel="stylesheet" href="src/styles.css?v=20260522-1015" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar">
+        <div class="topbar-main">
+          <div>
+            <h1>&#51312;&#47749; &#51216;&#44160;</h1>
+            <p id="progressText">&#46020;&#47732; &#51456;&#48708; &#51473;</p>
+          </div>
+          <div class="mode-actions">
+            <button id="listModeBtn" class="icon-button" type="button" aria-pressed="false">&#47785;&#47197;</button>
+            <button id="editModeBtn" class="icon-button" type="button" aria-pressed="false">&#54200;&#51665;</button>
+            <button id="locateBtn" class="icon-button" type="button" aria-label="&#51204;&#52404; &#48372;&#44592;">&#9678;</button>
+          </div>
+        </div>
+        <div class="filter-grid" aria-label="&#51312;&#47749; &#54596;&#53552;">
+          <label class="top-filter">
+            <span>&#51312;&#47749; &#51333;&#47448;</span>
+            <select id="typeFilter"></select>
+          </label>
+          <label class="top-filter">
+            <span>&#51312;&#47749; &#49345;&#53468;</span>
+            <select id="statusFilter"></select>
+          </label>
+        </div>
+      </header>
+
+      <main id="mapViewport" class="map-viewport" aria-label="&#45800;&#51648; &#46020;&#47732;">
+        <div id="mapStage" class="map-stage">
+          <img id="planImage" alt="&#45800;&#51648; &#44396;&#51201;&#46020;" draggable="false" />
+          <div id="pinLayer" class="pin-layer"></div>
+        </div>
+        <div class="minimap" aria-label="&#48120;&#45768;&#47605;">
+          <canvas id="miniCanvas"></canvas>
+          <div id="miniViewport" class="mini-viewport"></div>
+        </div>
+        <div id="addHint" class="add-hint" hidden>&#46020;&#47732;&#51032; &#51312;&#47749; &#50948;&#52824;&#47484; &#53552;&#52824;&#54616;&#49464;&#50836;</div>
+        <button id="addPinBtn" class="fab" type="button" aria-label="&#51312;&#47749; &#54592; &#52628;&#44032;">+</button>
+      </main>
+
+      <section id="listPanel" class="list-panel" hidden>
+        <div class="list-toolbar">
+          <div>
+            <strong>&#51312;&#47749; &#47785;&#47197;</strong>
+            <span id="listCountText">0</span>
+          </div>
+          <button id="printReportBtn" class="primary-small-button" type="button">&#48372;&#44256;&#49436; &#52636;&#47141;</button>
+        </div>
+        <div id="listRows" class="list-rows"></div>
+      </section>
+
+      <section id="sheet" class="bottom-sheet is-hidden" aria-live="polite">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title-row">
+          <div>
+            <div id="lightIdText" class="light-id">-</div>
+            <div id="coordText" class="coord-text">x 0 / y 0</div>
+          </div>
+          <button id="closeSheetBtn" class="secondary-icon-button" type="button">&#45803;&#44592;</button>
+          <button id="deletePinBtn" class="danger-button" type="button">&#49325;&#51228;</button>
+        </div>
+
+        <label class="field-label">
+          &#51312;&#47749; &#51333;&#47448;
+          <select id="lightType" name="type"></select>
+        </label>
+
+        <label id="customCodeField" class="field-label custom-code-field" hidden>
+          <span id="customCodeLabel">&#54788;&#51109; &#54364;&#44592;</span>
+          <input id="customCodeInput" name="customCode" autocomplete="off" inputmode="text" />
+        </label>
+
+        <label class="field-label">
+          &#47700;&#47784;
+          <textarea id="memoInput" name="memo" rows="2" autocomplete="off"></textarea>
+        </label>
+
+        <div class="status-actions" aria-label="&#51312;&#47749; &#49345;&#53468;">
+          <button data-action-status="normal" class="status-button normal" type="button">&#51221;&#49345;</button>
+          <button data-action-status="flicker" class="status-button flicker" type="button">&#51216;&#47736;</button>
+          <button data-action-status="out" class="status-button out" type="button">&#48120;&#51216;&#46321;</button>
+          <button data-action-status="damaged" class="status-button damaged" type="button">&#54028;&#49552;</button>
+        </div>
+      </section>
+
+      <section id="printReport" class="print-report" aria-hidden="true"></section>
+    </div>
+
+    <script type="module" src="src/app.js?v=20260522-1015"></script>
+  </body>
+</html>
