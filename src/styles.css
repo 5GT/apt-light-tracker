@@ -639,6 +639,15 @@ textarea {
     grid-column: 1 / -1;
   }
 
+  .report-time-field::after {
+    content: "";
+    display: inline-block;
+    width: 60mm;
+    margin-left: 2mm;
+    border-bottom: 1px solid #111;
+    vertical-align: 0.2em;
+  }
+
   .approval-table {
     width: 70mm;
     border-collapse: collapse;
@@ -779,7 +788,7 @@ textarea {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    font-size: 9pt;
+    font-size: 7.5pt;
   }
 
   .report-detail-section {
@@ -790,9 +799,11 @@ textarea {
   .report-table th,
   .report-table td {
     border: 1px solid #333;
-    padding: 2.2mm;
+    padding: 1.5mm 1mm;
     text-align: left;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .report-table th:nth-child(1),
@@ -803,12 +814,12 @@ textarea {
 
   .report-table th:nth-child(2),
   .report-table td:nth-child(2) {
-    width: 24mm;
+    width: 23mm;
   }
 
   .report-table th:nth-child(3),
   .report-table td:nth-child(3) {
-    width: 34mm;
+    width: 38mm;
   }
 
   .report-table th:nth-child(4),
@@ -818,12 +829,12 @@ textarea {
 
   .report-table th:nth-child(5),
   .report-table td:nth-child(5) {
-    width: 42mm;
+    width: 45mm;
   }
 
   .report-table th:nth-child(6),
   .report-table td:nth-child(6) {
-    width: 42mm;
+    width: 50mm;
   }
 
   .report-table th {

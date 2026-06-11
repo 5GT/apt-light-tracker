@@ -29,7 +29,7 @@ const lightTypes = [
 
 const typeFilters = [
   { id: "all", label: "\uc804\uccb4" },
-  { id: "security", label: "\ubcf4\uc548\ub4f1", typeIds: ["street_1", "street_t"] },
+  { id: "security", label: "\ubcf4\uc548\ub4f1 (1\uc790\ud615, T\uc790\ud615)", typeIds: ["street_1", "street_t"] },
   { id: "recycle_sensor", label: "\ubd84\ub9ac\uc218\uac70\uc7a5 \uc13c\uc11c\ub4f1", typeIds: ["recycle_sensor"] },
   { id: "entrance_line", label: "\ub3d9/\ub77c\uc778 \ud45c\uc2dc\ub4f1", typeIds: ["entrance_line"] }
 ];
@@ -852,7 +852,7 @@ function renderReport() {
           <h2>\uc678\ubd80\uc870\uba85 \uc810\uac80 \uc77c\uc9c0</h2>
           <div class="report-meta-line">
             <span>\ub0a0\uc9dc: ${longKoreanDate()}</span>
-            <span>\uc810\uac80\uc2dc\uac04:</span>
+            <span class="report-time-field">\uc810\uac80\uc2dc\uac04:</span>
             <span>\uc810\uac80\uc790:</span>
           </div>
         </div>
