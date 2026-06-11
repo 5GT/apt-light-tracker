@@ -627,11 +627,16 @@ textarea {
   }
 
   .report-meta-line {
-    display: flex;
-    gap: 10mm;
+    display: grid;
+    grid-template-columns: max-content max-content;
+    gap: 2mm 10mm;
     margin-top: 6mm;
     font-size: 10pt;
     white-space: nowrap;
+  }
+
+  .report-meta-line span:first-child {
+    grid-column: 1 / -1;
   }
 
   .approval-table {
@@ -772,6 +777,7 @@ textarea {
 
   .report-table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: 9pt;
   }
@@ -786,6 +792,7 @@ textarea {
     border: 1px solid #333;
     padding: 2.2mm;
     text-align: left;
+    overflow-wrap: anywhere;
   }
 
   .report-table th:nth-child(1),
@@ -794,9 +801,29 @@ textarea {
     text-align: center;
   }
 
+  .report-table th:nth-child(2),
+  .report-table td:nth-child(2) {
+    width: 24mm;
+  }
+
+  .report-table th:nth-child(3),
+  .report-table td:nth-child(3) {
+    width: 34mm;
+  }
+
+  .report-table th:nth-child(4),
+  .report-table td:nth-child(4) {
+    width: 18mm;
+  }
+
   .report-table th:nth-child(5),
   .report-table td:nth-child(5) {
-    width: 58mm;
+    width: 42mm;
+  }
+
+  .report-table th:nth-child(6),
+  .report-table td:nth-child(6) {
+    width: 42mm;
   }
 
   .report-table th {

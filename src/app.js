@@ -7,6 +7,7 @@ const REPORT_QR_URL = "public/assets/app-qr.png";
 const SUPABASE_URL = "https://laeixcqemytrjehoddxt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qX54QYuAILq0FBkrsEXLtA_ZzGtYYhb";
 const SUPABASE_TABLE = "lights";
+const ALLOW_PIN_MANAGEMENT = false;
 
 const text = {
   loading: "\ub3c4\uba74 \ubd88\ub7ec\uc624\ub294 \uc911",
@@ -24,6 +25,13 @@ const lightTypes = [
   { id: "landscape_r", label: "\uc870\uacbd\ub4f1 R\uc790\ud615", prefix: "LR" },
   { id: "recycle_sensor", label: "\ubd84\ub9ac\uc218\uac70\uc7a5 \uc13c\uc11c\ub4f1", prefix: "RS" },
   { id: "entrance_line", label: "\ud604\uad00 \ub3d9/\ub77c\uc778 \ud45c\uc2dc\ub4f1", prefix: "EL" }
+];
+
+const typeFilters = [
+  { id: "all", label: "\uc804\uccb4" },
+  { id: "security", label: "\ubcf4\uc548\ub4f1", typeIds: ["street_1", "street_t"] },
+  { id: "recycle_sensor", label: "\ubd84\ub9ac\uc218\uac70\uc7a5 \uc13c\uc11c\ub4f1", typeIds: ["recycle_sensor"] },
+  { id: "entrance_line", label: "\ub3d9/\ub77c\uc778 \ud45c\uc2dc\ub4f1", typeIds: ["entrance_line"] }
 ];
 
 const statuses = {
@@ -380,12 +388,18 @@ async function loadPlanImage() {
 
 function filteredLights() {
   return state.lights.filter((light) => {
-    const typeMatches = state.typeFilter === "all" || light.typeId === state.typeFilter;
+    const typeMatches = matchesTypeFilter(light);
     const statusMatches =
       state.statusFilter === "all" ||
       (state.statusFilter === "bad" ? issueStatuses.has(light.status) : light.status === state.statusFilter);
     return typeMatches && statusMatches;
   });
+}
+
+function matchesTypeFilter(light) {
+  if (state.typeFilter === "all") return true;
+  const filter = typeFilters.find((item) => item.id === state.typeFilter);
+  return Boolean(filter?.typeIds.includes(light.typeId));
 }
 
 function updateProgress() {
@@ -397,7 +411,7 @@ function updateProgress() {
 
 function renderFilterOptions() {
   els.typeFilter.innerHTML = "";
-  [{ id: "all", label: "\uc804\uccb4" }, ...lightTypes].forEach((filter) => {
+  typeFilters.forEach((filter) => {
     const option = document.createElement("option");
     option.value = filter.id;
     option.textContent = filter.label;
@@ -533,6 +547,7 @@ function fillSheet() {
   els.typeSelect.value = light.typeId;
   els.memoInput.value = light.memo || "";
   els.customCodeField.hidden = !codeConfig;
+  els.deletePinBtn.hidden = !ALLOW_PIN_MANAGEMENT;
   if (codeConfig) {
     els.customCodeLabel.textContent = codeConfig.label;
     els.customCodeInput.placeholder = codeConfig.placeholder;
@@ -548,7 +563,7 @@ function renderMode() {
   els.app.classList.toggle("list-open", listMode);
   els.viewport.hidden = listMode;
   els.listPanel.hidden = !listMode;
-  els.addPinBtn.hidden = listMode;
+  els.addPinBtn.hidden = !ALLOW_PIN_MANAGEMENT || listMode;
   els.locateBtn.disabled = listMode;
   els.listModeBtn.setAttribute("aria-pressed", String(listMode));
   els.listModeBtn.textContent = listMode ? "\uc9c0\ub3c4" : "\ubaa9\ub85d";
@@ -788,7 +803,7 @@ function selectNearestLight(clientX, clientY) {
 }
 
 function renderReport() {
-  const typeScopedLights = state.lights.filter((light) => state.typeFilter === "all" || light.typeId === state.typeFilter);
+  const typeScopedLights = state.lights.filter(matchesTypeFilter);
   const issueLights = typeScopedLights
     .filter((light) => {
       if (!issueStatuses.has(light.status)) return false;
@@ -808,11 +823,11 @@ function renderReport() {
     .join("");
   const rows = issueLights
     .map((light, index) => {
-      return `<tr><td>${index + 1}</td><td>${escapeHtml(reportLightName(light))}</td><td>${escapeHtml(typeById(light.typeId).label)}</td><td>${escapeHtml(statusLabel(light.status))}</td><td>${escapeHtml(light.memo || "")}</td></tr>`;
+      return `<tr><td>${index + 1}</td><td>${escapeHtml(reportLightName(light))}</td><td>${escapeHtml(typeById(light.typeId).label)}</td><td>${escapeHtml(statusLabel(light.status))}</td><td>${escapeHtml(light.memo || "")}</td><td></td></tr>`;
     })
     .join("");
   const typeTotalLines = lightTypes
-    .filter((type) => state.typeFilter === "all" || state.typeFilter === type.id)
+    .filter((type) => typeScopedLights.some((light) => light.typeId === type.id))
     .map((type) => {
       const typeLights = typeScopedLights.filter((light) => light.typeId === type.id);
       const typeIssues = typeLights.filter((light) => issueStatuses.has(light.status));
@@ -837,6 +852,7 @@ function renderReport() {
           <h2>\uc678\ubd80\uc870\uba85 \uc810\uac80 \uc77c\uc9c0</h2>
           <div class="report-meta-line">
             <span>\ub0a0\uc9dc: ${longKoreanDate()}</span>
+            <span>\uc810\uac80\uc2dc\uac04:</span>
             <span>\uc810\uac80\uc790:</span>
           </div>
         </div>
@@ -858,8 +874,8 @@ function renderReport() {
       </section>
       <section class="report-detail-section">
         <table class="report-table">
-          <thead><tr><th>No</th><th>\uc870\uba85\uc774\ub984</th><th>\uc885\ub958</th><th>\uc0c1\ud0dc</th><th>\ube44\uace0</th></tr></thead>
-          <tbody>${rows || `<tr><td colspan="5">\ubb38\uc81c \uc870\uba85\uc774 \uc5c6\uc2b5\ub2c8\ub2e4</td></tr>`}</tbody>
+          <thead><tr><th>No</th><th>\uc870\uba85\uc774\ub984</th><th>\uc885\ub958</th><th>\uc0c1\ud0dc</th><th>\ube44\uace0</th><th>\uc870\uce58\uc0ac\ud56d</th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="6">\ubb38\uc81c \uc870\uba85\uc774 \uc5c6\uc2b5\ub2c8\ub2e4</td></tr>`}</tbody>
         </table>
       </section>
     </div>
