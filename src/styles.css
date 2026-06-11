@@ -642,10 +642,8 @@ textarea {
   .report-time-field::after {
     content: "";
     display: inline-block;
-    width: 60mm;
+    width: 30mm;
     margin-left: 2mm;
-    border-bottom: 1px solid #111;
-    vertical-align: 0.2em;
   }
 
   .approval-table {
