@@ -41,7 +41,7 @@ const typeFilters = [
 
 const statuses = {
   normal: { label: "\uc815\uc0c1" },
-  flicker: { label: "\uc810\uba78" },
+  flicker: { label: "\uae30\ud0c0" },
   out: { label: "\ubbf8\uc810\ub4f1" },
   damaged: { label: "\ud30c\uc190" },
   unchecked: { label: "\ubbf8\uc810\uac80" }
@@ -53,7 +53,7 @@ const statusFilters = [
   { id: "all", label: "\uc804\uccb4" },
   { id: "unchecked", label: "\ubbf8\uc810\uac80" },
   { id: "normal", label: "\uc815\uc0c1" },
-  { id: "flicker", label: "\uc810\uba78" },
+  { id: "flicker", label: "\uae30\ud0c0" },
   { id: "out", label: "\ubbf8\uc810\ub4f1" },
   { id: "damaged", label: "\ud30c\uc190" },
   { id: "bad", label: "\ubd88\ub7c9\ub9cc" }
