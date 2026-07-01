@@ -16,6 +16,10 @@ const text = {
   progress: "\uc810\uac80",
   bad: "\ubd88\ub7c9",
   shown: "\ud45c\uc2dc",
+  syncChecking: "\ub3d9\uae30\ud654 \ud655\uc778 \uc911",
+  syncOnline: "\ub3d9\uae30\ud654\ub428",
+  syncSaving: "\uc800\uc7a5 \uc911",
+  syncOffline: "\ub85c\uceec \uc800\uc7a5 \uc911",
   deleteAsk: "\uc774 \uc870\uba85 \ud540\uc744 \uc0ad\uc81c\ud560\uae4c\uc694?"
 };
 
@@ -72,6 +76,7 @@ const state = {
   selectedId: null,
   typeFilter: "all",
   statusFilter: "all",
+  syncStatus: "checking",
   viewMode: "map",
   editMode: false,
   addMode: false,
@@ -175,6 +180,18 @@ function statusLabel(status) {
   return statuses[status]?.label || statuses.unchecked.label;
 }
 
+function syncLabel() {
+  if (state.syncStatus === "online") return text.syncOnline;
+  if (state.syncStatus === "saving") return text.syncSaving;
+  if (state.syncStatus === "offline") return text.syncOffline;
+  return text.syncChecking;
+}
+
+function setSyncStatus(status) {
+  state.syncStatus = status;
+  updateProgress();
+}
+
 function reportLightName(light) {
   return displayCode(light);
 }
@@ -262,22 +279,28 @@ async function loadLightsFromSupabase() {
 
 async function upsertLightRemote(light) {
   try {
+    setSyncStatus("saving");
     await supabaseRequest(`${SUPABASE_TABLE}?on_conflict=id`, {
       method: "POST",
       headers: { Prefer: "resolution=merge-duplicates" },
       body: JSON.stringify(lightToRow(light))
     });
+    setSyncStatus("online");
   } catch (error) {
+    setSyncStatus("offline");
     console.warn(error);
   }
 }
 
 async function deleteLightRemote(id) {
   try {
+    setSyncStatus("saving");
     await supabaseRequest(`${SUPABASE_TABLE}?id=eq.${encodeURIComponent(id)}`, {
       method: "DELETE"
     });
+    setSyncStatus("online");
   } catch (error) {
+    setSyncStatus("offline");
     console.warn(error);
   }
 }
@@ -334,7 +357,9 @@ function replaceLightsFromRemote(lights) {
 async function refreshLightsFromRemote() {
   try {
     replaceLightsFromRemote(await loadLightsFromSupabase());
+    setSyncStatus("online");
   } catch (error) {
+    setSyncStatus("offline");
     console.warn(error);
   }
 }
@@ -342,6 +367,7 @@ async function refreshLightsFromRemote() {
 async function loadLights() {
   const stored = localStorage.getItem(STORAGE_KEY);
   try {
+    setSyncStatus("checking");
     const remoteLights = await loadLightsFromSupabase();
     if (remoteLights.length === 0 && stored) {
       state.lights = JSON.parse(stored).map(normalizeLight);
@@ -350,8 +376,10 @@ async function loadLights() {
       state.lights = remoteLights;
     }
     if (!renumberLights({ syncRemote: true })) saveToStorage();
+    setSyncStatus("online");
     return;
   } catch (error) {
+    setSyncStatus("offline");
     console.warn(error);
   }
   if (stored) {
@@ -406,7 +434,7 @@ function updateProgress() {
   const total = state.lights.length;
   const checked = state.lights.filter((light) => light.status !== "unchecked").length;
   const bad = state.lights.filter((light) => issueStatuses.has(light.status)).length;
-  els.progressText.textContent = `${text.progress} ${checked}/${total} \u00b7 ${text.bad} ${bad} \u00b7 ${text.shown} ${filteredLights().length}`;
+  els.progressText.textContent = `${text.progress} ${checked}/${total} \u00b7 ${text.bad} ${bad} \u00b7 ${text.shown} ${filteredLights().length} \u00b7 ${syncLabel()}`;
 }
 
 function renderFilterOptions() {
@@ -761,6 +789,10 @@ function updateSelected(partial, options = {}) {
   } else {
     persistLight(light);
   }
+  if (options.render === false) {
+    updateProgress();
+    return;
+  }
   render({ focusSelected: Boolean(options.focus) });
 }
 
@@ -974,7 +1006,7 @@ function attachEvents() {
   });
 
   els.memoInput.addEventListener("input", () => {
-    updateSelected({ memo: els.memoInput.value.trim() });
+    updateSelected({ memo: els.memoInput.value }, { render: false });
   });
 
   document.querySelectorAll("[data-action-status]").forEach((button) => {
