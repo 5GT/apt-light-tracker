@@ -8,6 +8,7 @@ const SUPABASE_URL = "https://laeixcqemytrjehoddxt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qX54QYuAILq0FBkrsEXLtA_ZzGtYYhb";
 const SUPABASE_TABLE = "lights";
 const ALLOW_PIN_MANAGEMENT = false;
+const ALLOW_LIGHT_IDENTITY_EDIT = false;
 
 const text = {
   loading: "\ub3c4\uba74 \ubd88\ub7ec\uc624\ub294 \uc911",
@@ -573,8 +574,13 @@ function fillSheet() {
   els.lightIdText.textContent = `${type.label} ${displayCode(light)}`;
   els.coordText.textContent = `x ${Math.round(light.x)} / y ${Math.round(light.y)}`;
   els.typeSelect.value = light.typeId;
+  els.typeSelect.disabled = !ALLOW_LIGHT_IDENTITY_EDIT;
+  els.typeSelect.title = ALLOW_LIGHT_IDENTITY_EDIT ? "" : "\uad00\ub9ac\uc790 \ud3b8\uc9d1 \ud654\uba74\uc5d0\uc11c \uc218\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4";
   els.memoInput.value = light.memo || "";
   els.customCodeField.hidden = !codeConfig;
+  els.customCodeField.classList.toggle("is-locked", !ALLOW_LIGHT_IDENTITY_EDIT);
+  els.customCodeInput.disabled = !ALLOW_LIGHT_IDENTITY_EDIT;
+  els.customCodeInput.title = ALLOW_LIGHT_IDENTITY_EDIT ? "" : "\uad00\ub9ac\uc790 \ud3b8\uc9d1 \ud654\uba74\uc5d0\uc11c \uc218\uc815\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4";
   els.deletePinBtn.hidden = !ALLOW_PIN_MANAGEMENT;
   if (codeConfig) {
     els.customCodeLabel.textContent = codeConfig.label;
@@ -986,6 +992,7 @@ function attachEvents() {
   });
 
   els.typeSelect.addEventListener("change", () => {
+    if (!ALLOW_LIGHT_IDENTITY_EDIT) return;
     changeSelectedType(els.typeSelect.value);
   });
 
@@ -1002,6 +1009,7 @@ function attachEvents() {
   });
 
   els.customCodeInput.addEventListener("input", () => {
+    if (!ALLOW_LIGHT_IDENTITY_EDIT) return;
     updateSelected({ code: els.customCodeInput.value.trim() });
   });
 

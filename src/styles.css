@@ -471,6 +471,20 @@ textarea {
   font-weight: 850;
 }
 
+select:disabled,
+input:disabled {
+  opacity: 0.72;
+  color: var(--muted);
+  background: #121820;
+}
+
+.field-label.is-locked::after {
+  content: "관리자 편집 화면에서 수정 가능";
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 textarea {
   min-height: 72px;
   resize: vertical;
